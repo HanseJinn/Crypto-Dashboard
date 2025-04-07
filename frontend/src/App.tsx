@@ -1,34 +1,46 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
+
+type Crypto = {
+  id: number
+  symbol: string
+  price: number
+  volume: number
+  timestamp: string
+}
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [data, setData] = useState<Crypto[]>([])
+
+  useEffect(() => {
+    axios.get('http://localhost:8000/api/prices/')
+      .then(res => setData(res.data))
+  }, [])
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="p-8">
+      <h1 className="text-3xl font-bold mb-4">Crypto Dashboard</h1>
+      <table className="table-auto w-full text-left">
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Price</th>
+            <th>Volume</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((coin) => (
+            <tr key={coin.id}>
+              <td>{coin.symbol.toUpperCase()}</td>
+              <td>${coin.price.toFixed(2)}</td>
+              <td>${coin.volume.toLocaleString()}</td>
+              <td>{new Date(coin.timestamp).toLocaleString()}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }
 
