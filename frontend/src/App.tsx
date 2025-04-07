@@ -10,6 +10,7 @@ type Crypto = {
 };
 
 function App() {
+  
   const [data, setData] = useState<Crypto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
@@ -24,7 +25,7 @@ function App() {
         const errorMessage =
           axios.isAxiosError(err) && err.response?.data?.message
             ? err.response.data.message
-            : "Failed to fetch data. Please try again later.";
+            : "Failed to fetch data. Please try again. Check Connection.";
         setError(errorMessage);
       } finally {
         setLoading(false);
@@ -44,45 +45,51 @@ function App() {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-2xl text-red-500">{error}</div>
+      <div className="flex flex-col justify-center items-center h-screen">
+      <div className="text-2xl text-red-500">{error}</div>
+      <button
+        onClick={() => window.location.reload()}
+        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-150"
+      >
+        Retry
+      </button>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="p-8">
-        <h1 className="text-4xl font-bold text-center text-blue-600 mb-6">
-          Crypto Dashboard
-        </h1>
-        <div className="overflow-x-auto shadow-md rounded-lg">
-          <table className="table-auto w-full text-left bg-white border border-gray-300">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="px-4 py-2">Symbol</th>
-                <th className="px-4 py-2">Price</th>
-                <th className="px-4 py-2">Volume</th>
-                <th className="px-4 py-2">Timestamp</th>
+    <div className="min-h-screen bg-gray-100 p-8">
+      <h1 className="text-4xl font-bold text-center text-blue-600 mb-10">Crypto Dashboard</h1>
+      <div className="max-w-6xl mx-auto bg-white p-6 rounded-2xl shadow-lg overflow-x-auto">
+        <table className="w-full text-left border border-gray-200 rounded-md">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-3 text-sm font-semibold text-gray-600">Symbol</th>
+              <th className="px-4 py-3 text-sm font-semibold text-gray-600">Price</th>
+              <th className="px-4 py-3 text-sm font-semibold text-gray-600">Volume</th>
+              <th className="px-4 py-3 text-sm font-semibold text-gray-600">Timestamp</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((coin) => (
+              <tr key={coin.id} className="border-t hover:bg-gray-50 transition duration-150">
+                <td className="px-4 py-3">{coin.symbol.toUpperCase()}</td>
+                <td className="px-4 py-3 text-green-600 font-medium">${coin.price.toFixed(2)}</td>
+                <td className="px-4 py-3">{coin.volume.toLocaleString()}</td>
+                <td className="px-4 py-3 text-sm text-gray-500">{new Date(coin.timestamp).toLocaleString()}</td>
               </tr>
-            </thead>
-            <tbody>
-              {data.map((coin) => (
-                <tr key={coin.id} className="border-b">
-                  <td className="px-4 py-2">{coin.symbol.toUpperCase()}</td>
-                  <td className="px-4 py-2 text-green-500">
-                    ${coin.price.toFixed(2)}
-                  </td>
-                  <td className="px-4 py-2">{coin.volume.toLocaleString()}</td>
-                  <td className="px-4 py-2">
-                    {new Date(coin.timestamp).toLocaleString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
+      <footer className="mt-10 text-center text-gray-500">
+        <p className="text-sm">© 2023 Crypto Dashboard. All rights reserved.</p>
+        <p className="text-sm">Built with React and Tailwind CSS</p>
+        <p className="text-sm">Data provided by CoinGecko API</p>
+      </footer>
+      <div className="flex justify-center mt-5">
       </div>
+    </div>
+      
     </div>
   );
 }
