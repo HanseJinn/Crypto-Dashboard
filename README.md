@@ -2,6 +2,7 @@
 Wir ziehen aktuelle Kryptodaten über eine API , speichern diese per ETL-Prozess in eine MySQL-Datenbank und visualisieren die Daten (Kursverlauf, Volumen) im Frontend.
 
 🧱 Tech Stack Übersicht
+
 Frontend: Vite + React + TypeScript + TailwindCSS
 
 Backend: Django REST Framework + Python ETL Job
