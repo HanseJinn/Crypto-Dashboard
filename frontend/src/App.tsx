@@ -13,7 +13,7 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://backend:8000/api/crypto/prices/')
+        const response = await fetch('/api/crypto/prices/')
         if (!response.ok) throw new Error('Fehler beim Abrufen der Daten')
         const result = await response.json()
         setData(result.data)
