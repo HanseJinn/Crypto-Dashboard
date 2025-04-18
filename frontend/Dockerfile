@@ -1,22 +1,13 @@
-# Use Node.js for building the frontend
-FROM node:18-alpine AS build
+# Dev Dockerfile für Frontend mit Vite Hot-Reload
+FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package.json and install dependencies
-COPY package.json package-lock.json ./
+COPY package*.json ./
 RUN npm install
 
-# Copy the rest of the application and build it
 COPY . .
-RUN npm run build
 
-# Use a lightweight web server to serve the built files
-FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 5173
 
-# Expose the port
-EXPOSE 80
-
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "run", "dev", "--", "--host"]

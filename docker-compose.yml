@@ -1,28 +1,20 @@
 services:
-  mysql:
-    image: mysql:8
-    container_name: mysql
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: crypto
-    volumes:
-      - mysql_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
-
   backend:
     build: ./backend
     container_name: backend
     command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend:/app
+      - sqlite_data:/app/db  # SQLite-DB persistieren
     ports:
       - "8000:8000"
-    depends_on:
-      - mysql
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:8000 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   etl:
     build:
@@ -31,7 +23,7 @@ services:
     container_name: etl
     command: ["python", "main.py"]
     depends_on:
-      - mysql
+      - backend
     env_file:
       - .env
 
@@ -42,8 +34,10 @@ services:
       - ./frontend:/app
     ports:
       - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host"
     depends_on:
       - backend
 
 volumes:
-  mysql_data:
+  sqlite_data:
+    # TODO: Für Produktion ggf. Volume Pfad extern speichern oder MySQL/PostgreSQL verwenden

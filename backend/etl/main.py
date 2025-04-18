@@ -1,24 +1,20 @@
 import requests
 import pandas as pd
-import MySQLdb
-import os
+import sqlite3
 from datetime import datetime
+import os
 
-conn = MySQLdb.connect(
-    host=os.getenv("DB_HOST"),
-    user=os.getenv("DB_USER"),
-    passwd=os.getenv("DB_PASSWORD"),
-    db=os.getenv("DB_NAME"),
-    port=int(os.getenv("DB_PORT"))
-)
+# Connect to SQLite database
+db_path = os.path.join(os.getcwd(), "db.sqlite3")  # Adjust path if needed
+conn = sqlite3.connect(db_path)
 
 cursor = conn.cursor()
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS crypto_prices (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    symbol VARCHAR(10),
-    price FLOAT,
-    volume FLOAT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    symbol TEXT,
+    price REAL,
+    volume REAL,
     timestamp DATETIME
 )
 """)
@@ -31,7 +27,7 @@ def fetch_crypto():
 
     for coin in res:
         cursor.execute(
-            "INSERT INTO crypto_prices (symbol, price, volume, timestamp) VALUES (%s, %s, %s, %s)",
+            "INSERT INTO crypto_prices (symbol, price, volume, timestamp) VALUES (?, ?, ?, ?)",
             (
                 coin["symbol"],
                 coin["current_price"],
@@ -42,3 +38,4 @@ def fetch_crypto():
     conn.commit()
 
 fetch_crypto()
+conn.close()
