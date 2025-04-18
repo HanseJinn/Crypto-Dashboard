@@ -3,6 +3,12 @@ export const content = [
   "./src/**/*.{js,ts,jsx,tsx}",
 ];
 export const theme = {
-  extend: {},
+  extend: {
+    colors: {
+      primary: '#1E3A8A',
+      secondary: '#10B981',
+      accent: '#FBBF24',
+    }
+  },
 };
 export const plugins = [];

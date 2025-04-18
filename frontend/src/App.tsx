@@ -1,97 +1,59 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from 'react'
 
-type Crypto = {
-  id: number;
-  symbol: string;
-  price: number;
-  volume: number;
-  timestamp: string;
-};
-
-function App() {
-  
-  const [data, setData] = useState<Crypto[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>("");
-
-  useEffect(() => {
-    // Fetching the data using async/await and error handling
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/api/prices/");
-        setData(response.data);
-      } catch (err) {
-        const errorMessage =
-          axios.isAxiosError(err) && err.response?.data?.message
-            ? err.response.data.message
-            : "Failed to fetch data. Please try again. Check Connection.";
-        setError(errorMessage);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-2xl text-gray-500">Loading...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col justify-center items-center h-screen">
-      <div className="text-2xl text-red-500">{error}</div>
-      <button
-        onClick={() => window.location.reload()}
-        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-150"
-      >
-        Retry
-      </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-4xl font-bold text-center text-blue-600 mb-10">Crypto Dashboard</h1>
-      <div className="max-w-6xl mx-auto bg-white p-6 rounded-2xl shadow-lg overflow-x-auto">
-        <table className="w-full text-left border border-gray-200 rounded-md">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-sm font-semibold text-gray-600">Symbol</th>
-              <th className="px-4 py-3 text-sm font-semibold text-gray-600">Price</th>
-              <th className="px-4 py-3 text-sm font-semibold text-gray-600">Volume</th>
-              <th className="px-4 py-3 text-sm font-semibold text-gray-600">Timestamp</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((coin) => (
-              <tr key={coin.id} className="border-t hover:bg-gray-50 transition duration-150">
-                <td className="px-4 py-3">{coin.symbol.toUpperCase()}</td>
-                <td className="px-4 py-3 text-green-600 font-medium">${coin.price.toFixed(2)}</td>
-                <td className="px-4 py-3">{coin.volume.toLocaleString()}</td>
-                <td className="px-4 py-3 text-sm text-gray-500">{new Date(coin.timestamp).toLocaleString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      <footer className="mt-10 text-center text-gray-500">
-        <p className="text-sm">© 2023 Crypto Dashboard. All rights reserved.</p>
-        <p className="text-sm">Built with React and Tailwind CSS</p>
-        <p className="text-sm">Data provided by CoinGecko API</p>
-      </footer>
-      <div className="flex justify-center mt-5">
-      </div>
-    </div>
-      
-    </div>
-  );
+interface CryptoData {
+  coin: string
+  price: number
+  change_24h: number
 }
 
-export default App;
+function App() {
+  const [data, setData] = useState<CryptoData[] | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/crypto/prices/')
+        if (!response.ok) throw new Error('Fehler beim Abrufen der Daten')
+        const result = await response.json()
+        setData(result.data)
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message)
+        } else {
+          setError('Unbekannter Fehler')
+        }
+      }
+    }
+    fetchData()
+  }, [])
+
+  return (
+   
+    <div className="min-h-screen bg-gray-100 p-6 text-gray-800">
+      <h1 className="text-3xl font-bold mb-6">🪙 Krypto Dashboard</h1>
+
+      {error && (
+        <div className="bg-red-200 text-red-800 px-4 py-2 rounded mb-4">
+          Fehler: {error}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {data?.map((coin) => (
+          <div key={coin.coin} className="bg-white p-4 rounded-2xl shadow">
+            <h2 className="text-xl font-semibold capitalize">{coin.coin}</h2>
+            <p className="text-lg">💰 Preis: ${coin.price.toFixed(2)}</p>
+            <p className={`text-sm ${coin.change_24h >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              24h Änderung: {coin.change_24h.toFixed(2)}%
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* TODO: Weitere Coins, Diagramme oder Filter integrieren */}
+    </div>
+  )
+}
+
+export default App
