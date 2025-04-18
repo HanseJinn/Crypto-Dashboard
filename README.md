@@ -15,4 +15,6 @@ Datenbank: SQLite
 
 Docker: für alles (inkl. Docker Compose)
 
+API: CoinGecko
+
 Ziel: Datenpipeline, API, Web UI, DevOps Setup
