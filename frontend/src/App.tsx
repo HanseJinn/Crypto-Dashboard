@@ -13,7 +13,7 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/crypto/prices/')
+        const response = await fetch('http://backend:8000/api/crypto/prices/')
         if (!response.ok) throw new Error('Fehler beim Abrufen der Daten')
         const result = await response.json()
         setData(result.data)
@@ -21,7 +21,7 @@ function App() {
         if (err instanceof Error) {
           setError(err.message)
         } else {
-          setError('Unbekannter Fehler')
+          setError('Ein unbekannter Fehler ist aufgetreten')
         }
       }
     }
@@ -29,7 +29,6 @@ function App() {
   }, [])
 
   return (
-   
     <div className="min-h-screen bg-gray-100 p-6 text-gray-800">
       <h1 className="text-3xl font-bold mb-6">🪙 Krypto Dashboard</h1>
 
