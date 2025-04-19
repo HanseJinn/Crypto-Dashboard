@@ -1,5 +1,5 @@
 # Crypto-Dashboard
-Wir ziehen aktuelle Kryptodaten über eine API , speichern diese per ETL-Prozess in eine MySQL-Datenbank und visualisieren die Daten (Kursverlauf, Volumen) im Frontend.
+Wir ziehen aktuelle Kryptodaten über eine API , speichern diese per ETL-Prozess in eine Datenbank und visualisieren die Daten (Kursverlauf, Volumen) im Frontend.
 
 Die App ist nur zu Lernzwecken.
 
